@@ -1,0 +1,106 @@
+<!-- 1. HOME SCREEN -->
+<div id="home" class="screen active">
+  <div class="card mb-4">
+    <h2 class="text-xl font-bold text-gray-800 mb-1">Cosa vuoi annaffiare?</h2>
+    <p class="text-xs text-gray-500 mb-4">Scegli l'ambiente per controllare il livello d'acqua</p>
+
+    <div class="space-y-3">
+      <button onclick="openCategory('vaso')" class="btn bg-emerald-600 hover:bg-emerald-700 w-full shadow-md shadow-emerald-600/20">
+        <span class="text-2xl">🪴</span>
+        <div class="text-left">
+          <div class="font-bold">Piante in vaso</div>
+          <div class="text-xs opacity-90 font-normal">Ficus, Monstera, Basilico, Pothos...</div>
+        </div>
+      </button>
+
+      <button onclick="openCategory('terreno')" class="btn bg-amber-800 hover:bg-amber-900 w-full shadow-md shadow-amber-900/20">
+        <span class="text-2xl">🌳</span>
+        <div class="text-left">
+          <div class="font-bold">Piante nel terreno</div>
+          <div class="text-xs opacity-90 font-normal">Olivo, Limone, Rosmarino, Lavanda...</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <button onclick="showScreen('descrizioni')" class="btn bg-sky-600 hover:bg-sky-700 w-full shadow-md shadow-sky-600/20">
+    <span class="text-xl">📖</span> Schede Botaniche & Consigli
+  </button>
+</div>
+
+<!-- 2. ANNAFFIATURA SCREEN -->
+<div id="annaffiatura" class="screen">
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <button onclick="showScreen('home')" class="text-emerald-700 font-semibold hover:underline flex items-center gap-1 text-sm">
+        ← Torna alla Home
+      </button>
+      <span id="categoriaLabel" class="badge bg-emerald-100 text-emerald-800 uppercase tracking-wider text-[10px]">
+        In vaso
+      </span>
+    </div>
+
+    <h2 class="text-xl font-bold text-gray-800 mb-2">Seleziona la pianta</h2>
+    <div id="plantList" class="flex flex-wrap gap-2 mb-4"></div>
+
+    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+      <h3 id="nomePianta" class="font-bold text-center text-lg text-gray-800 mb-1">
+        Seleziona una pianta
+      </h3>
+      <p id="piantaInfo" class="text-center text-xs text-gray-500 mb-3"></p>
+
+      <div id="wateringCan" class="water-icon my-2 text-emerald-500">
+        🚿
+      </div>
+
+      <!-- Barra di umidità -->
+      <div class="w-full bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+        <div id="waterProgressBar" class="bg-emerald-500 h-3 rounded-full transition-all duration-300" style="width: 50%;"></div>
+      </div>
+
+      <div class="flex justify-between items-center text-xs text-gray-500 mb-2">
+        <span>Secca</span>
+        <span id="waterPercentage" class="font-bold text-gray-700">Livello: 50%</span>
+        <span>Allagata</span>
+      </div>
+
+      <p id="waterMessage" class="text-center font-bold text-sm text-emerald-700 py-1 px-2 rounded-lg bg-emerald-50">
+        Acqua ottimale
+      </p>
+
+      <!-- Controlli acqua -->
+      <div class="grid grid-cols-2 gap-3 mt-4">
+        <button onclick="removeWater()" class="btn bg-rose-500 hover:bg-rose-600 shadow-sm">
+          <span>💧-</span> Riduci
+        </button>
+        <button onclick="addWater()" class="btn bg-emerald-600 hover:bg-emerald-700 shadow-sm">
+          <span>💧+</span> Irriga
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. DESCRIZIONI SCREEN -->
+<div id="descrizioni" class="screen">
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <button onclick="showScreen('home')" class="text-emerald-700 font-semibold hover:underline flex items-center gap-1 text-sm">
+        ← Indietro
+      </button>
+      <span class="badge bg-sky-100 text-sky-800">Prontuario</span>
+    </div>
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-1">📚 Schede Botaniche</h2>
+    <p class="text-xs text-gray-500 mb-4">Consigli pratici per la cura ideale di ogni pianta</p>
+
+    <!-- Filtri rapide per schede -->
+    <div class="flex gap-2 mb-4">
+      <button onclick="filterCards('all')" class="card-filter-btn px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs font-semibold active-tab" data-filter="all">Tutte</button>
+      <button onclick="filterCards('vaso')" class="card-filter-btn px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold" data-filter="vaso">🪴 Vaso</button>
+      <button onclick="filterCards('terreno')" class="card-filter-btn px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold" data-filter="terreno">🌳 Terreno</button>
+    </div>
+
+    <div id="schedeContainer" class="space-y-4"></div>
+  </div>
+</div>
