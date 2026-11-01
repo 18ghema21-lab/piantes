@@ -1,224 +1,137 @@
-let plants =
-JSON.parse(localStorage.getItem("plants")) || [];
+let plants = JSON.parse(localStorage.getItem("plants")) || [];
 
-function savePlants(){
-  localStorage.setItem(
-    "plants",
-    JSON.stringify(plants)
-  );
+function savePlants() {
+    localStorage.setItem("plants", JSON.stringify(plants));
 }
 
-function addPlant(){
+function addPlant() {
 
-  const plant={
-    name:document.getElementById("name").value,
-    category:document.getElementById("category").value,
-    purchase:document.getElementById("purchase").value,
-    frequency:Number(
-      document.getElementById("frequency").value
-    ),
-    description:
-      document.getElementById("description").value,
-    lastWatered:new Date().toISOString(),
-    waterLevel:100
-  };
+    const plant = {
+        name: document.getElementById("name").value,
+        category: document.getElementById("category").value,
+        purchase: document.getElementById("purchase").value,
+        frequency: Number(document.getElementById("frequency").value),
+        description: document.getElementById("description").value,
+        lastWatered: new Date().toISOString(),
+        waterLevel: 100
+    };
 
-  plants.push(plant);
+    plants.push(plant);
 
-  savePlants();
+    savePlants();
 
-  renderPlants();
+    renderPlants();
+
+    updateDashboard();
 }
 
-function renderPlants(){
+function renderPlants() {
 
-  const list =
-    document.getElementById("plantList");
+    const list = document.getElementById("plantList");
 
-  list.innerHTML="";
+    if (!list) return;
 
-  plants.forEach((p,index)=>{
+    list.innerHTML = "";
 
-    const days =
-      Math.floor(
-      (Date.now() -
-      new Date(p.lastWatered))
-      /(1000*60*60*24));
+    plants.forEach((p, index) => {
 
-    let color="water-green";
+        const days = Math.floor(
+            (Date.now() - new Date(p.lastWatered))
+            / (1000 * 60 * 60 * 24)
+        );
 
-    if(p.waterLevel < 70)
-      color="water-yellow";
+        let color = "water-green";
 
-    if(p.waterLevel < 20)
-      color="water-red";
+        if (p.waterLevel < 70) {
+            color = "water-yellow";
+        }
 
-    list.innerHTML += `
-      <div class="card">
+        if (p.waterLevel < 20) {
+            color = "water-red";
+        }
 
-        <h3>${p.name}</h3>
+        list.innerHTML += `
+            <div class="card">
 
-        <p>
-        Categoria:
-        ${p.category}
-        </p>
+                <h3>${p.name}</h3>
 
-        <p>
-        Giorni ultima irrigazione:
-        ${days}
-        </p>
+                <p>Categoria: ${p.category}</p>
 
-        <div
-        class="${color}"
-        style="font-size:60px">
-        🚿
-        </div>
+                <p>Giorni ultima irrigazione: ${days}</p>
 
-        <p>
-        Acqua:
-        ${p.waterLevel}%
-        </p>
+                <div class="${color}" style="font-size:60px">
+                    🚿
+                </div>
 
-        <button
-        class="primary"
-        onclick="waterPlant(${index})">
-        💧 Ho annaffiato
-        </button>
+                <p>Acqua: ${p.waterLevel}%</p>
 
-        <button
-        class="secondary"
-        onclick="deletePlant(${index})">
-        Elimina
-        </button>
+                <button
+                    class="primary"
+                    onclick="waterPlant(${index})">
+                    💧 Ho annaffiato
+                </button>
 
-      </div>
-    `;
-  });
+                <button
+                    class="secondary"
+                    onclick="deletePlant(${index})">
+                    Elimina
+                </button>
 
+            </div>
+        `;
+    });
 }
 
-  const list =
-    document.getElementById("plantList");
+function waterPlant(index) {
 
-  list.innerHTML="";
+    plants[index].waterLevel = 100;
 
-  plants.forEach((p,index)=>{
+    plants[index].lastWatered =
+        new Date().toISOString();
 
-    const days =
-      Math.floor(
-      (Date.now() -
-      new Date(p.lastWatered))
-      /(1000*60*60*24));
+    savePlants();
 
-    let color="water-green";
+    renderPlants();
 
-    if(p.waterLevel<70)
-      color="water-yellow";
-
-    if(p.waterLevel<20)
-      color="water-red";
-
-    list.innerHTML += `
-      <div class="card">
-        <h3>${p.name}</h3>
-
-        <p>
-        Categoria:
-        ${p.category}
-        </p>
-
-        <p>
-        Giorni ultima irrigazione:
-        ${days}
-        </p>
-
-        <div
-        class="${color}"
-        style="font-size:60px">
-        🚿
-        </div>
-
-        <p>
-        Acqua:
-        ${p.waterLevel}%
-        </p>
-
-        <button
-        class="primary"
-        onclick="waterPlant(${index})">
-        💧 Ho annaffiato
-        </button>
-
-        <button
-        class="secondary"
-        onclick="deletePlant(${index})">
-        Elimina
-        </button>
-      </div>
-    `;
-  });
-
+    updateDashboard();
 }
 
-function waterPlant(index){
+function deletePlant(index) {
 
-  plants[index].waterLevel=100;
+    plants.splice(index, 1);
 
-  plants[index].lastWatered=
-    new Date().toISOString();
+    savePlants();
 
-  savePlants();
+    renderPlants();
 
-  renderPlants();
+    updateDashboard();
 }
 
-function deletePlant(index){
+function updateDashboard() {
 
-  plants.splice(index,1);
+    document.getElementById("totalPlants").innerText =
+        plants.length;
 
-  savePlants();
+    const needWater =
+        plants.filter(p => p.waterLevel < 30);
 
-  renderPlants();
+    document.getElementById("plantsToWater").innerText =
+        needWater.length;
+
+    if (plants.length > 0) {
+        document.getElementById("lastWatered").innerText =
+            new Date(
+                plants[0].lastWatered
+            ).toLocaleDateString();
+    } else {
+        document.getElementById("lastWatered").innerText = "-";
+    }
 }
 
-window.onload=renderPlants;
-function updateDashboard(){
+window.onload = function () {
 
-document.getElementById(
-"totalPlants"
-).innerText=
-plants.length;
+    renderPlants();
 
-const needWater=
-plants.filter(
-p => p.waterLevel < 30
-);
-
-document.getElementById(
-"plantsToWater"
-).innerText=
-needWater.length;
-
-if(plants.length){
-
-document.getElementById(
-"lastWatered"
-).innerText=
-new Date(
-plants[0].lastWatered
-).toLocaleDateString();
-
-}
-
-}
-
-const oldRender =
-renderPlants;
-
-renderPlants = function(){
-
-oldRender();
-
-updateDashboard();
+    updateDashboard();
 
 };
