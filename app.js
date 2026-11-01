@@ -296,3 +296,10 @@ function showCategory(category){
     });
 
 }
+function closeCategory(){
+
+    document.getElementById(
+        "categoryView"
+    ).style.display = "none";
+
+}
