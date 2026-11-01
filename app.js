@@ -117,3 +117,43 @@ function deletePlant(index){
 }
 
 window.onload=renderPlants;
+function updateDashboard(){
+
+document.getElementById(
+"totalPlants"
+).innerText=
+plants.length;
+
+const needWater=
+plants.filter(
+p => p.waterLevel < 30
+);
+
+document.getElementById(
+"plantsToWater"
+).innerText=
+needWater.length;
+
+if(plants.length){
+
+document.getElementById(
+"lastWatered"
+).innerText=
+new Date(
+plants[0].lastWatered
+).toLocaleDateString();
+
+}
+
+}
+
+const oldRender =
+renderPlants;
+
+renderPlants = function(){
+
+oldRender();
+
+updateDashboard();
+
+};
