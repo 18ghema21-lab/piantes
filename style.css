@@ -1,0 +1,81 @@
+:root{
+  --green:#4CAF50;
+  --blue:#81D4FA;
+  --earth:#795548;
+  --bg:#f2f9f2;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+}
+
+header{
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+
+.container{
+  padding:15px;
+}
+
+.card{
+  background:white;
+  border-radius:16px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 3px 8px rgba(0,0,0,.1);
+}
+
+button{
+  border:none;
+  border-radius:12px;
+  padding:12px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.primary{
+  background:var(--green);
+  color:white;
+}
+
+.secondary{
+  background:var(--earth);
+  color:white;
+}
+
+.water-green{
+  color:#22c55e;
+}
+
+.water-yellow{
+  color:#facc15;
+}
+
+.water-red{
+  color:#ef4444;
+}
+
+.hidden{
+  display:none;
+}
+
+input,textarea,select{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  margin-bottom:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+.plant-photo{
+  width:100%;
+  max-height:220px;
+  object-fit:cover;
+  border-radius:12px;
+}
