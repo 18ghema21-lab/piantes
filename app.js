@@ -32,6 +32,69 @@ function addPlant(){
 
 function renderPlants(){
 
+  const list =
+    document.getElementById("plantList");
+
+  list.innerHTML="";
+
+  plants.forEach((p,index)=>{
+
+    const days =
+      Math.floor(
+      (Date.now() -
+      new Date(p.lastWatered))
+      /(1000*60*60*24));
+
+    let color="water-green";
+
+    if(p.waterLevel < 70)
+      color="water-yellow";
+
+    if(p.waterLevel < 20)
+      color="water-red";
+
+    list.innerHTML += `
+      <div class="card">
+
+        <h3>${p.name}</h3>
+
+        <p>
+        Categoria:
+        ${p.category}
+        </p>
+
+        <p>
+        Giorni ultima irrigazione:
+        ${days}
+        </p>
+
+        <div
+        class="${color}"
+        style="font-size:60px">
+        🚿
+        </div>
+
+        <p>
+        Acqua:
+        ${p.waterLevel}%
+        </p>
+
+        <button
+        class="primary"
+        onclick="waterPlant(${index})">
+        💧 Ho annaffiato
+        </button>
+
+        <button
+        class="secondary"
+        onclick="deletePlant(${index})">
+        Elimina
+        </button>
+
+      </div>
+    `;
+  });
+
 }
 
   const list =
