@@ -1,156 +1,213 @@
-let plants = JSON.parse(localStorage.getItem("plants")) || [];
+// Stato dell'applicazione
+let plants = JSON.parse(localStorage.getItem('plants')) || [];
+let activeCategoryFilter = null;
 
-function savePlants() {
-    localStorage.setItem("plants", JSON.stringify(plants));
+// Elementi DOM
+const totalPlantsEl = document.getElementById('totalPlants');
+const plantsToWaterEl = document.getElementById('plantsToWater');
+const lastWateredEl = document.getElementById('lastWatered');
+const plantListEl = document.getElementById('plantList');
+
+const nameInput = document.getElementById('name');
+const categoryInput = document.getElementById('category');
+const purchaseInput = document.getElementById('purchase');
+const frequencyInput = document.getElementById('frequency');
+const descriptionInput = document.getElementById('description');
+
+// Inizializza data acquisto di default a oggi
+if (purchaseInput) {
+    purchaseInput.value = new Date().toISOString().split('T')[0];
 }
 
-// Calculate water level dynamically based on days elapsed vs watering frequency
-function calculateWaterLevel(plant) {
-    if (!plant.frequency || plant.frequency <= 0) return 100;
-    
-    const daysSinceWatered = (Date.now() - new Date(plant.lastWatered)) / (1000 * 60 * 60 * 24);
-    const remainingPercentage = 100 - (daysSinceWatered / plant.frequency) * 100;
-    
-    return Math.max(0, Math.min(100, Math.round(remainingPercentage)));
-}
+// Inizializza filtri categorie cliccabili
+document.querySelectorAll('.category-card').forEach((card) => {
+    card.addEventListener('click', () => {
+        const text = card.querySelector('h3').textContent.toLowerCase();
+        const selected = text.includes('vaso') ? 'Vaso' : 'Terreno';
 
+        if (activeCategoryFilter === selected) {
+            activeCategoryFilter = null;
+            card.classList.remove('active');
+        } else {
+            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+            activeCategoryFilter = selected;
+            card.classList.add('active');
+        }
+        renderPlants();
+    });
+});
+
+// Aggiungi nuova pianta
 function addPlant() {
-    const nameInput = document.getElementById("name");
-    const categoryInput = document.getElementById("category");
-    const purchaseInput = document.getElementById("purchase");
-    const frequencyInput = document.getElementById("frequency");
-    const descriptionInput = document.getElementById("description");
-
     const name = nameInput.value.trim();
-    const frequency = Number(frequencyInput.value);
+    const category = categoryInput.value;
+    const purchase = purchaseInput.value;
+    const frequency = parseInt(frequencyInput.value, 10);
+    const description = descriptionInput.value.trim();
 
-    if (!name || frequency <= 0) {
-        alert("Inserisci un nome valido e una frequenza di irrigazione in giorni.");
+    if (!name) {
+        alert('Inserisci un nome per la pianta!');
+        nameInput.focus();
         return;
     }
 
-    const plant = {
-        name: name,
-        category: categoryInput ? categoryInput.value : "",
-        purchase: purchaseInput ? purchaseInput.value : "",
-        frequency: frequency,
-        description: descriptionInput ? descriptionInput.value : "",
-        lastWatered: new Date().toISOString()
+    if (isNaN(frequency) || frequency <= 0) {
+        alert("Inserisci una frequenza d'irrigazione valida in giorni (es. 3)!");
+        frequencyInput.focus();
+        return;
+    }
+
+    const newPlant = {
+        id: Date.now().toString(),
+        name,
+        category,
+        purchaseDate: purchase || new Date().toISOString().split('T')[0],
+        frequency,
+        description,
+        lastWateredDate: new Date().toISOString().split('T')[0] // Registrata come innaffiata oggi di base
     };
 
-    plants.push(plant);
-    savePlants();
-    renderPlants();
-    updateDashboard();
+    plants.unshift(newPlant);
+    saveAndRender();
 
-    // Reset form fields
-    nameInput.value = "";
-    if (frequencyInput) frequencyInput.value = "";
-    if (descriptionInput) descriptionInput.value = "";
+    // Reset modulo
+    nameInput.value = '';
+    frequencyInput.value = '';
+    descriptionInput.value = '';
 }
 
-function renderPlants() {
-    const list = document.getElementById("plantList");
-    if (!list) return;
+// Annaffia una pianta
+function waterPlant(id) {
+    const plant = plants.find(p => p.id === id);
+    if (!plant) return;
 
-    if (plants.length === 0) {
-        list.innerHTML = "<p>Nessuna pianta presente. Aggiungine una!</p>";
+    plant.lastWateredDate = new Date().toISOString().split('T')[0];
+    saveAndRender();
+}
+
+// Elimina una pianta
+function deletePlant(id) {
+    const plant = plants.find(p => p.id === id);
+    if (!plant) return;
+
+    if (confirm(`Sei sicuro di voler eliminare "${plant.name}"?`)) {
+        plants = plants.filter(p => p.id !== id);
+        saveAndRender();
+    }
+}
+
+// Calcola se necessita acqua
+function getWateringStatus(plant) {
+    const lastDate = new Date(plant.lastWateredDate || plant.purchaseDate);
+    const today = new Date();
+
+    // Differenza in giorni pieni
+    const diffTime = today - lastDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const daysLeft = plant.frequency - diffDays;
+
+    return {
+        needsWater: daysLeft <= 0,
+        daysLeft: daysLeft
+    };
+}
+
+// Salva e aggiorna interfaccia
+function saveAndRender() {
+    localStorage.setItem('plants', JSON.stringify(plants));
+    renderDashboard();
+    renderPlants();
+}
+
+// Render Dashboard
+function renderDashboard() {
+    totalPlantsEl.textContent = plants.length;
+
+    let toWaterCount = 0;
+    let latestWateredTimestamp = 0;
+
+    plants.forEach(plant => {
+        const status = getWateringStatus(plant);
+        if (status.needsWater) toWaterCount++;
+
+        if (plant.lastWateredDate) {
+            const time = new Date(plant.lastWateredDate).getTime();
+            if (time > latestWateredTimestamp) {
+                latestWateredTimestamp = time;
+            }
+        }
+    });
+
+    plantsToWaterEl.textContent = toWaterCount;
+
+    if (latestWateredTimestamp > 0) {
+        const date = new Date(latestWateredTimestamp);
+        lastWateredEl.textContent = date.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
+    } else {
+        lastWateredEl.textContent = '-';
+    }
+}
+
+// Render Elenco Piante
+function renderPlants() {
+    plantListEl.innerHTML = '';
+
+    const filtered = activeCategoryFilter
+        ? plants.filter(p => p.category === activeCategoryFilter)
+        : plants;
+
+    if (filtered.length === 0) {
+        plantListEl.innerHTML = `
+            <div class="empty-state">
+                <p>Nessuna pianta trovata ${activeCategoryFilter ? `nella categoria "${activeCategoryFilter}"` : 'nel tuo giardino'}.</p>
+            </div>
+        `;
         return;
     }
 
-    list.innerHTML = plants.map((p, index) => {
-        const days = Math.floor(
-            (Date.now() - new Date(p.lastWatered)) / (1000 * 60 * 60 * 24)
-        );
+    filtered.forEach(plant => {
+        const status = getWateringStatus(plant);
+        const icon = plant.category === 'Vaso' ? '🪴' : '🌳';
 
-        const currentWaterLevel = calculateWaterLevel(p);
+        const statusBadge = status.needsWater
+            ? `<span class="badge badge-alert">⚠️ Annaffiare oggi!</span>`
+            : `<span class="badge badge-ok">💧 Tra ${status.daysLeft} ${status.daysLeft === 1 ? 'giorno' : 'giorni'}</span>`;
 
-        let color = "water-green";
-        if (currentWaterLevel < 70) color = "water-yellow";
-        if (currentWaterLevel < 20) color = "water-red";
+        const item = document.createElement('div');
+        item.className = 'plant-item';
 
-        // Escape output to prevent HTML injection
-        const safeName = escapeHtml(p.name);
-        const safeCategory = escapeHtml(p.category || "-");
-
-        return `
-            <div class="card">
-                <h3>${safeName}</h3>
-                <p>Categoria: ${safeCategory}</p>
-                <p>Ogni: ${p.frequency} giorni</p>
-                <p>Giorni dall'ultima irrigazione: ${days}</p>
-
-                <div class="${color}" style="font-size:60px">
-                    🚿
+        item.innerHTML = `
+            <div class="plant-info">
+                <div class="plant-header">
+                    <span style="font-size: 1.3rem;">${icon}</span>
+                    <span class="plant-title">${escapeHtml(plant.name)}</span>
+                    <span class="badge badge-category">${plant.category}</span>
+                    ${statusBadge}
                 </div>
-
-                <p>Acqua: <strong>${currentWaterLevel}%</strong></p>
-
-                <button class="primary" onclick="waterPlant(${index})">
-                    💧 Ho annaffiato
-                </button>
-                <button class="secondary" onclick="deletePlant(${index})">
-                    Elimina
-                </button>
+                <div class="plant-meta">
+                    <span>🗓️ Frequenza: ogni ${plant.frequency} giorni | Ultima irrigazione: ${plant.lastWateredDate || 'Mai'}</span>
+                    ${plant.description ? `<p class="plant-desc">${escapeHtml(plant.description)}</p>` : ''}
+                </div>
+            </div>
+            <div class="plant-actions">
+                <button class="btn-action btn-water" onclick="waterPlant('${plant.id}')">💧 Annaffia</button>
+                <button class="btn-action btn-delete" onclick="deletePlant('${plant.id}')">🗑️ Elimina</button>
             </div>
         `;
-    }).join("");
+
+        plantListEl.appendChild(item);
+    });
 }
 
-function waterPlant(index) {
-    if (!plants[index]) return;
-
-    plants[index].lastWatered = new Date().toISOString();
-
-    savePlants();
-    renderPlants();
-    updateDashboard();
-}
-
-function deletePlant(index) {
-    if (!confirm(`Sei sicuro di voler eliminare "${plants[index].name}"?`)) return;
-
-    plants.splice(index, 1);
-
-    savePlants();
-    renderPlants();
-    updateDashboard();
-}
-
-function updateDashboard() {
-    const totalEl = document.getElementById("totalPlants");
-    const needWaterEl = document.getElementById("plantsToWater");
-    const lastWateredEl = document.getElementById("lastWatered");
-
-    if (totalEl) totalEl.innerText = plants.length;
-
-    // Filter plants needing water (< 30%)
-    const needWater = plants.filter(p => calculateWaterLevel(p) < 30);
-    if (needWaterEl) needWaterEl.innerText = needWater.length;
-
-    // Find the latest watered plant across the entire array
-    if (lastWateredEl) {
-        if (plants.length > 0) {
-            const mostRecentDate = plants.reduce((latest, p) => {
-                const date = new Date(p.lastWatered);
-                return date > latest ? date : latest;
-            }, new Date(0));
-
-            lastWateredEl.innerText = mostRecentDate.toLocaleDateString();
-        } else {
-            lastWateredEl.innerText = "-";
-        }
-    }
-}
-
-// Simple HTML escaping helper
+// Utility anti XSS
 function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.innerText = str;
-    return div.innerHTML;
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
-window.onload = function () {
-    renderPlants();
-    updateDashboard();
-};
+// Avvio iniziale
+saveAndRender();
