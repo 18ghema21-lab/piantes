@@ -157,3 +157,73 @@ oldRender();
 updateDashboard();
 
 };
+function showCategory(category){
+
+    document.getElementById(
+        "categoryView"
+    ).style.display = "block";
+
+    document.getElementById(
+        "categoryTitle"
+    ).innerHTML =
+        category === "Vaso"
+        ? "🪴 Piante in Vaso"
+        : "🌳 Piante nel Terreno";
+
+    const container =
+        document.getElementById(
+            "categoryPlants"
+        );
+
+    container.innerHTML = "";
+
+    const filtered =
+        plants.filter(
+            p => p.category === category
+        );
+
+    filtered.forEach(p => {
+
+        container.innerHTML += `
+
+        <div class="card">
+
+            <h3>${p.name}</h3>
+
+            <p>
+            Categoria:
+            ${p.category}
+            </p>
+
+            <p>
+            Frequenza:
+            ${p.frequency} giorni
+            </p>
+
+            <p>
+            ${p.description}
+            </p>
+
+        </div>
+
+        `;
+
+    });
+
+    window.scrollTo({
+        top:
+        document.getElementById(
+            "categoryView"
+        ).offsetTop,
+        behavior:"smooth"
+    });
+
+}
+
+function closeCategory(){
+
+    document.getElementById(
+        "categoryView"
+    ).style.display = "none";
+
+}
