@@ -1,165 +1,114 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1">
+    <title>🌱 Piante</title>
 
-<title>🌱 Piante</title>
-
-<link
-rel="stylesheet"
-href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
+    <header>
+        <h1>🌱 Piante</h1>
+        <p>Gestione delle tue piante</p>
+    </header>
 
-<h1>🌱 Piante</h1>
+    <div class="container">
 
-<p>
-Gestione delle tue piante
-</p>
+        <!-- DASHBOARD -->
+        <div class="card">
 
-</header>
+            <h2>📊 Dashboard</h2>
 
-<div class="container">
-  <!-- DASHBOARD -->
+            <div class="stats-grid">
 
-<div class="card">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPlants">0</div>
+                    <div>Piante Totali</div>
+                </div>
 
-<h2>📊 Dashboard</h2>
+                <div class="stat-card">
+                    <div class="stat-number" id="plantsToWater">0</div>
+                    <div>Da Annaffiare</div>
+                </div>
 
-<div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="lastWatered">-</div>
+                    <div>Ultima Irrigazione</div>
+                </div>
 
-<div class="stat-card">
-<div class="stat-number"
-id="totalPlants">
-0
-</div>
+            </div>
 
-<div>
-Piante Totali
-</div>
-</div>
+        </div>
 
-<div class="stat-card">
+        <!-- CATEGORIE -->
+        <div class="card">
 
-<div
-class="stat-number"
-id="plantsToWater">
-0
-</div>
+            <h2>🌿 Categorie</h2>
 
-<div>
-Da Annaffiare
-</div>
+            <div class="category-grid">
 
-</div>
+                <div class="category-card">
+                    🪴
+                    <h3>Piante in Vaso</h3>
+                </div>
 
-<div class="stat-card">
+                <div class="category-card">
+                    🌳
+                    <h3>Piante nel Terreno</h3>
+                </div>
 
-<div
-class="stat-number"
-id="lastWatered">
--
-</div>
+            </div>
 
-<div>
-Ultima Irrigazione
-</div>
+        </div>
 
-</div>
+        <!-- AGGIUNTA PIANTA -->
+        <div class="card">
 
-</div>
+            <h2>➕ Aggiungi Pianta</h2>
 
-</div>
+            <input
+                id="name"
+                placeholder="Nome pianta">
 
-<!-- CATEGORIE -->
+            <select id="category">
+                <option>Vaso</option>
+                <option>Terreno</option>
+            </select>
 
-<div class="card">
+            <input
+                id="purchase"
+                type="date">
 
-<h2>🌿 Categorie</h2>
+            <input
+                id="frequency"
+                type="number"
+                placeholder="Frequenza irrigazione (giorni)">
 
-<div class="category-grid">
-<button class="category-card"
-onclick="showCategory('Vaso')">
-    🪴
-    <h3>Piante in Vaso</h3>
-</button>
+            <textarea
+                id="description"
+                placeholder="Descrizione"></textarea>
 
-<button class="category-card"
-onclick="showCategory('Terreno')">
-    🌳
-    <h3>Piante nel Terreno</h3>
-</button>
+            <button
+                class="primary"
+                onclick="addPlant()">
+                Aggiungi
+            </button>
 
-</div>
+        </div>
 
-</div>
+        <!-- ELENCO PIANTE -->
 
-<div class="card">
+        <div id="plantList"></div>
 
-<h2>➕ Aggiungi Pianta</h2>
+    </div>
 
-<input
-id="name"
-placeholder="Nome pianta">
-
-<select id="category">
-
-<option>Vaso</option>
-
-<option>Terreno</option>
-
-</select>
-
-<input
-id="purchase"
-type="date">
-
-<input
-id="frequency"
-type="number"
-placeholder="Frequenza irrigazione">
-
-<textarea
-id="description"
-placeholder="Descrizione">
-</textarea>
-
-<button
-class="primary"
-onclick="addPlant()">
-
-Aggiungi
-
-</button>
-
-</div>
-<div id="categoryView"
-class="card"
-style="display:none;">
-
-    <button class="primary"
-    onclick="closeCategory()">
-        ⬅️ Torna alla Home
-    </button>
-
-    <h2 id="categoryTitle"></h2>
-
-    <div id="categoryPlants"></div>
-
-</div>
-
-<div id="plantList"></div>
-
-</div>
-<div id="plantList"></div>
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
 </body>
+
 </html>
