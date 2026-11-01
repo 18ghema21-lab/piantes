@@ -32,6 +32,8 @@ function addPlant(){
 
 function renderPlants(){
 
+}
+
   const list =
     document.getElementById("plantList");
 
