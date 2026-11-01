@@ -229,3 +229,70 @@ function closeCategory(){
     ).style.display = "none";
 
 }
+function showCategory(category){
+
+    document.getElementById(
+        "categoryView"
+    ).style.display = "block";
+
+    document.getElementById(
+        "categoryTitle"
+    ).innerText =
+    category === "Vaso"
+    ? "🪴 Piante in Vaso"
+    : "🌳 Piante nel Terreno";
+
+    const container =
+    document.getElementById(
+        "categoryPlants"
+    );
+
+    container.innerHTML = "";
+
+    plants
+    .filter(
+        p => p.category === category
+    )
+    .forEach((p,index)=>{
+
+        const realIndex =
+        plants.indexOf(p);
+
+        container.innerHTML += `
+
+        <div class="card">
+
+            <h3>${p.name}</h3>
+
+            <p>
+            Categoria:
+            ${p.category}
+            </p>
+
+            <p>
+            ${p.description}
+            </p>
+
+            <p>
+            Acqua:
+            ${p.waterLevel}%
+            </p>
+
+            <button
+            class="primary"
+            onclick="waterPlant(${realIndex})">
+            💧 Ho annaffiato
+            </button>
+
+            <button
+            class="secondary"
+            onclick="deletePlant(${realIndex})">
+            Elimina
+            </button>
+
+        </div>
+
+        `;
+    });
+
+}
