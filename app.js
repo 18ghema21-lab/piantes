@@ -175,7 +175,20 @@ function renderPlants() {
     filtered.forEach(plant => {
         const status = getWateringStatus(plant);
         const icon = plant.category === 'Vaso' ? '🪴' : '🌳';
+const lastDate = new Date(
+    plant.lastWateredDate || plant.purchaseDate
+);
 
+const today = new Date();
+
+const diffDays = Math.floor(
+    (today - lastDate) / (1000 * 60 * 60 * 24)
+);
+
+let progressPercent =
+    100 - ((diffDays / plant.frequency) * 100);
+
+progressPercent = Math.max(0, progressPercent);
         const statusBadge = status.needsWater
             ? `<span class="badge badge-alert">⚠️ Annaffiare oggi!</span>`
             : `<span class="badge badge-ok">💧 Tra ${status.daysLeft} ${status.daysLeft === 1 ? 'giorno' : 'giorni'}</span>`;
