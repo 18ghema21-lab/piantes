@@ -224,6 +224,19 @@ const wateringMessage =
                     ${plant.description ? `<p class="plant-desc">${escapeHtml(plant.description)}</p>` : ''}
                 </div>
             </div>
+            <div class="watering-progress">
+    <div
+        class="watering-progress-fill"
+        style="
+            width:${progressPercent}%;
+            background:${progressColor};
+        ">
+    </div>
+</div>
+
+<div class="watering-label">
+    ${wateringMessage}
+</div>
             <div class="plant-actions">
     <button class="btn-action btn-water" onclick="waterPlant('${plant.id}')">💧 Annaffia</button>
     <button class="btn-action btn-edit" onclick="editPlant('${plant.id}')">✏️ Modifica</button>
