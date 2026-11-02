@@ -197,6 +197,13 @@ if (progressPercent <= 20) {
 else if (progressPercent <= 30) {
     progressColor = '#ed6c02';
 }
+        const daysRemaining =
+    Math.max(0, plant.frequency - diffDays);
+
+const wateringMessage =
+    progressPercent <= 0
+        ? '⚠️ Da annaffiare'
+        : `💧 ${daysRemaining} giorni rimanenti`;
         const statusBadge = status.needsWater
             ? `<span class="badge badge-alert">⚠️ Annaffiare oggi!</span>`
             : `<span class="badge badge-ok">💧 Tra ${status.daysLeft} ${status.daysLeft === 1 ? 'giorno' : 'giorni'}</span>`;
