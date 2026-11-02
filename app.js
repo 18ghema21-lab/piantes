@@ -211,4 +211,32 @@ function escapeHtml(str) {
 }
 
 // Avvio iniziale
+function editPlant(id) {
+    const plant = plants.find(p => p.id === id);
+
+    if (!plant) return;
+
+    const newName = prompt("Nome pianta:", plant.name);
+    if (newName === null) return;
+
+    const newFrequency = prompt(
+        "Frequenza irrigazione (giorni):",
+        plant.frequency
+    );
+
+    if (newFrequency === null) return;
+
+    const newDescription = prompt(
+        "Descrizione:",
+        plant.description || ""
+    );
+
+    plant.name = newName.trim();
+
+    plant.frequency = parseInt(newFrequency, 10) || plant.frequency;
+
+    plant.description = newDescription;
+
+    saveAndRender();
+}
 saveAndRender();
