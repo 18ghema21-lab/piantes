@@ -224,15 +224,15 @@ const wateringMessage =
                     ${plant.description ? `<p class="plant-desc">${escapeHtml(plant.description)}</p>` : ''}
                 </div>
             </div>
-           <hr>
-
-<div style="
-    width:100%;
-    height:30px;
-    background:red;
-    border:3px solid black;
-    margin:10px 0;
-"></div>
+           <div class="watering-progress">
+    <div
+        class="watering-progress-fill"
+        style="
+            width:${progressPercent}%;
+            background:${progressColor};
+        ">
+    </div>
+</div>
 
 <div class="watering-label">
     ${wateringMessage}
