@@ -190,9 +190,10 @@ function renderPlants() {
                 </div>
             </div>
             <div class="plant-actions">
-                <button class="btn-action btn-water" onclick="waterPlant('${plant.id}')">💧 Annaffia</button>
-                <button class="btn-action btn-delete" onclick="deletePlant('${plant.id}')">🗑️ Elimina</button>
-            </div>
+    <button class="btn-action btn-water" onclick="waterPlant('${plant.id}')">💧 Annaffia</button>
+    <button class="btn-action btn-edit" onclick="editPlant('${plant.id}')">✏️ Modifica</button>
+    <button class="btn-action btn-delete" onclick="deletePlant('${plant.id}')">🗑️ Elimina</button>
+</div>
         `;
 
         plantListEl.appendChild(item);
