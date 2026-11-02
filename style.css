@@ -315,6 +315,8 @@ button.primary:hover {
 
 .watering-progress-fill {
     height: 100%;
+    background: green;
+    height: 100%;
     width: 0%;
     transition: width 0.5s ease;
 }
