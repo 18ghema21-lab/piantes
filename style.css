@@ -302,22 +302,23 @@ button.primary:hover {
     background: white;
     border-radius: var(--radius);
     border: 1px dashed var(--border);
+} /* <-- Parentesi di chiusura aggiunta qui */
+
 .watering-progress {
     width: 100%;
-    height: 20px;
-    background: #cccccc;
-    border: 2px solid black;
+    height: 12px;
+    background: #e0e0e0;
     border-radius: 20px;
     overflow: hidden;
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    margin-bottom: 6px;
 }
 
 .watering-progress-fill {
     height: 100%;
-    background: green;
-    height: 100%;
+    background: var(--primary);
     width: 0%;
+    border-radius: 20px;
     transition: width 0.5s ease;
 }
 
@@ -325,4 +326,5 @@ button.primary:hover {
     font-size: 0.85rem;
     color: var(--text-muted);
     margin-bottom: 10px;
+    display: block;
 }
