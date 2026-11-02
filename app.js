@@ -189,6 +189,14 @@ let progressPercent =
     100 - ((diffDays / plant.frequency) * 100);
 
 progressPercent = Math.max(0, progressPercent);
+        let progressColor = '#2e7d32';
+
+if (progressPercent <= 20) {
+    progressColor = '#d32f2f';
+}
+else if (progressPercent <= 30) {
+    progressColor = '#ed6c02';
+}
         const statusBadge = status.needsWater
             ? `<span class="badge badge-alert">⚠️ Annaffiare oggi!</span>`
             : `<span class="badge badge-ok">💧 Tra ${status.daysLeft} ${status.daysLeft === 1 ? 'giorno' : 'giorni'}</span>`;
