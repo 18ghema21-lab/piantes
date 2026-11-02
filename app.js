@@ -1,5 +1,12 @@
 // Stato dell'applicazione
 let plants = JSON.parse(localStorage.getItem('plants')) || [];
+plants.forEach((plant, index) => {
+    if (!plant.id) {
+        plant.id = "old_" + index + "_" + Date.now();
+    }
+});
+
+localStorage.setItem('plants', JSON.stringify(plants));
 let activeCategoryFilter = null;
 
 // Elementi DOM
