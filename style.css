@@ -277,6 +277,14 @@ button.primary:hover {
 .btn-water:hover {
     background: #bbdefb;
 }
+.btn-edit {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+.btn-edit:hover {
+    background: #ffecb3;
+}
 
 .btn-delete {
     background: #ffebee;
