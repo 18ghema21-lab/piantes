@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>🌱 Piante</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -19,93 +17,196 @@
 
     <div class="container">
 
-        <!-- DASHBOARD -->
-        <div class="card">
+        <!-- HOME -->
+        <section class="page attiva" id="page-home">
 
-            <h2>📊 Dashboard</h2>
+            <div class="card">
 
-            <div class="stats-grid">
+                <h2>📊 Dashboard</h2>
 
-                <div class="stat-card">
-                    <div class="stat-number" id="totalPlants">0</div>
-                    <div>Piante Totali</div>
-                </div>
+                <div class="stats-grid">
 
-                <div class="stat-card">
-                    <div class="stat-number" id="plantsToWater">0</div>
-                    <div>Da Annaffiare</div>
-                </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPlants">0</div>
+                        <div>Piante Totali</div>
+                    </div>
 
-                <div class="stat-card">
-                    <div class="stat-number" id="lastWatered">-</div>
-                    <div>Ultima Irrigazione</div>
-                </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="plantsToWater">0</div>
+                        <div>Da Annaffiare</div>
+                    </div>
 
-            </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="lastWatered">-</div>
+                        <div>Ultima Irrigazione</div>
+                    </div>
 
-        </div>
-
-        <!-- CATEGORIE -->
-        <div class="card">
-
-            <h2>🌿 Categorie</h2>
-
-            <div class="category-grid">
-
-                <div class="category-card">
-                    🪴
-                    <h3>Piante in Vaso</h3>
-                </div>
-
-                <div class="category-card">
-                    🌳
-                    <h3>Piante nel Terreno</h3>
                 </div>
 
             </div>
 
-        </div>
+            <div class="card">
 
-        <!-- AGGIUNTA PIANTA -->
-        <div class="card">
+                <h2>🌿 Categorie</h2>
 
-            <h2>➕ Aggiungi Pianta</h2>
+                <div class="category-grid">
 
-            <input
-                id="name"
-                placeholder="Nome pianta">
+                    <div class="category-card"
+                         onclick="location.hash='lista-vaso'">
 
-            <select id="category">
-                <option>Vaso</option>
-                <option>Terreno</option>
-            </select>
+                        🪴
+                        <h3>Piante in Vaso</h3>
 
-            <input
-                id="purchase"
-                type="date">
+                    </div>
 
-            <input
-                id="frequency"
-                type="number"
-                placeholder="Frequenza irrigazione (giorni)">
+                    <div class="category-card"
+                         onclick="location.hash='lista-terreno'">
 
-            <textarea
-                id="description"
-                placeholder="Descrizione"></textarea>
+                        🌳
+                        <h3>Piante nel Terreno</h3>
 
-            <button
-                class="primary"
-                onclick="addPlant()">
-                Aggiungi
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button class="primary"
+                    onclick="location.hash='lista-tutte'">
+                Vedi tutte le piante
             </button>
 
-        </div>
+        </section>
 
-        <!-- ELENCO PIANTE -->
+        <!-- LISTA PIANTE -->
+        <section class="page" id="page-list">
 
-        <div id="plantList"></div>
+            <a class="back"
+               href="#home">
+
+                ← Indietro
+
+            </a>
+
+            <h2 class="page-title"
+                id="listTitle">
+
+                Elenco piante
+
+            </h2>
+
+            <div id="plantList"></div>
+
+        </section>
+
+        <!-- DETTAGLIO PIANTA -->
+        <section class="page" id="page-detail">
+
+            <a class="back"
+               id="detailBack"
+               href="#lista-tutte">
+
+                ← Indietro
+
+            </a>
+
+            <div class="card"
+                 id="plantDetail">
+
+            </div>
+
+        </section>
+
+        <!-- FORM AGGIUNTA / MODIFICA -->
+        <section class="page" id="page-form">
+
+            <a class="back"
+               id="formBack"
+               href="#home">
+
+                ← Indietro
+
+            </a>
+
+            <div class="card">
+
+                <h2 id="formTitle">
+                    ➕ Aggiungi Pianta
+                </h2>
+
+                <input
+                    id="name"
+                    placeholder="Nome pianta">
+
+                <select id="category">
+                    <option>Vaso</option>
+                    <option>Terreno</option>
+                </select>
+
+                <input
+                    id="purchase"
+                    type="date">
+
+                <input
+                    id="frequency"
+                    type="number"
+                    placeholder="Frequenza irrigazione (giorni)">
+
+                <textarea
+                    id="description"
+                    placeholder="Descrizione"></textarea>
+
+                <button
+                    class="primary"
+                    onclick="savePlant()">
+
+                    Salva
+
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="cancelForm()">
+
+                    Annulla
+
+                </button>
+
+            </div>
+
+        </section>
 
     </div>
+
+    <!-- BARRA DI NAVIGAZIONE -->
+    <nav class="bottom-nav">
+
+        <a href="#home"
+           data-nav="home"
+           class="active">
+
+            🏠
+            <span>Home</span>
+
+        </a>
+
+        <a href="#lista-tutte"
+           data-nav="lista">
+
+            🪴
+            <span>Piante</span>
+
+        </a>
+
+        <a href="#aggiungi"
+           data-nav="aggiungi">
+
+            ➕
+            <span>Aggiungi</span>
+
+        </a>
+
+    </nav>
 
     <script src="app.js"></script>
 
