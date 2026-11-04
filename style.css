@@ -352,7 +352,30 @@ button.primary:hover {
 .back:hover {
     color: var(--primary-hover);
 }
+/* =====================================================
+   NAVIGAZIONE A PANNELLI
+   ===================================================== */
 
+.page {
+    display: none !important;
+}
+
+.page.attiva {
+    display: flex !important;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.back {
+    align-self: flex-start;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--primary);
+}
+
+.back:hover {
+    color: var(--primary-hover);
+}
 .page-title {
     font-size: 1.25rem;
     color: var(--primary);
