@@ -439,3 +439,327 @@ function renderList(filter) {
         );
     });
 }
+// =====================================================
+// DETTAGLIO PIANTA
+// =====================================================
+
+function renderDetail(id) {
+
+    const plant = getPlant(id);
+
+    if (!plant) {
+
+        plantDetailEl.innerHTML = `
+            <div class="empty-state">
+                Pianta non trovata.
+            </div>
+        `;
+
+        return;
+    }
+
+    const status =
+        getWateringStatus(plant);
+
+    const icon =
+        plant.category === "Vaso"
+            ? "🪴"
+            : "🌳";
+
+    plantDetailEl.innerHTML = `
+
+        <div class="detail-icon">
+            ${icon}
+        </div>
+
+        <h2 class="detail-name">
+            ${escapeHtml(plant.name)}
+        </h2>
+
+        <div class="detail-row">
+            <strong>Categoria</strong>
+            <span>${plant.category}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Acquistata</strong>
+            <span>${formatDate(plant.purchaseDate)}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Frequenza</strong>
+            <span>${plant.frequency} giorni</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Ultima irrigazione</strong>
+            <span>${formatDate(plant.lastWateredDate)}</span>
+        </div>
+
+        <div class="detail-row">
+            <strong>Prossima irrigazione</strong>
+            <span>
+                ${
+                    status.needsWater
+                        ? "⚠️ Da annaffiare"
+                        : `${status.daysLeft} giorni`
+                }
+            </span>
+        </div>
+
+        ${
+            plant.description
+                ? `
+                    <div style="margin-top:1rem;">
+                        <strong>Descrizione</strong>
+                        <p style="margin-top:0.5rem;">
+                            ${escapeHtml(plant.description)}
+                        </p>
+                    </div>
+                `
+                : ""
+        }
+
+        <div class="plant-actions" style="margin-top:1rem;">
+
+            <button
+                class="btn-action btn-water"
+                onclick="waterPlant('${plant.id}')">
+
+                💧 Annaffia
+
+            </button>
+
+            <button
+                class="btn-action btn-edit"
+                onclick="location.hash='modifica-${plant.id}'">
+
+                ✏️ Modifica
+
+            </button>
+
+            <button
+                class="btn-action btn-delete"
+                onclick="deletePlant('${plant.id}')">
+
+                🗑️ Elimina
+
+            </button>
+
+        </div>
+    `;
+}
+
+// =====================================================
+// AZIONI PIANTA
+// =====================================================
+
+function waterPlant(id) {
+
+    const plant = getPlant(id);
+
+    if (!plant) return;
+
+    plant.lastWateredDate =
+        todayStr();
+
+    saveAndRefresh();
+
+    route();
+}
+
+function deletePlant(id) {
+
+    const plant = getPlant(id);
+
+    if (!plant) return;
+
+    if (
+        confirm(
+            `Eliminare "${plant.name}" ?`
+        )
+    ) {
+
+        plants = plants.filter(
+            p => p.id !== id
+        );
+
+        saveAndRefresh();
+
+        location.hash =
+            "lista-tutte";
+    }
+}
+
+// =====================================================
+// FORM
+// =====================================================
+
+function openForm(id = null) {
+
+    editingId = id;
+
+    purchaseInput.value =
+        todayStr();
+
+    nameInput.value = "";
+    categoryInput.value = "Vaso";
+    frequencyInput.value = "";
+    descriptionInput.value = "";
+
+    if (!id) {
+
+        formTitleEl.textContent =
+            "➕ Aggiungi Pianta";
+
+        return;
+    }
+
+    const plant =
+        getPlant(id);
+
+    if (!plant) return;
+
+    formTitleEl.textContent =
+        "✏️ Modifica Pianta";
+
+    nameInput.value =
+        plant.name || "";
+
+    categoryInput.value =
+        plant.category || "Vaso";
+
+    purchaseInput.value =
+        plant.purchaseDate ||
+        todayStr();
+
+    frequencyInput.value =
+        plant.frequency || "";
+
+    descriptionInput.value =
+        plant.description || "";
+}
+
+function savePlant() {
+
+    const name =
+        nameInput.value.trim();
+
+    const category =
+        categoryInput.value;
+
+    const purchase =
+        purchaseInput.value;
+
+    const frequency =
+        parseInt(
+            frequencyInput.value,
+            10
+        );
+
+    const description =
+        descriptionInput.value.trim();
+
+    if (!name) {
+        alert(
+            "Inserisci un nome."
+        );
+        return;
+    }
+
+    if (
+        !frequency ||
+        frequency <= 0
+    ) {
+        alert(
+            "Inserisci una frequenza valida."
+        );
+        return;
+    }
+
+    if (editingId) {
+
+        const plant =
+            getPlant(editingId);
+
+        if (plant) {
+
+            plant.name =
+                name;
+
+            plant.category =
+                category;
+
+            plant.purchaseDate =
+                purchase;
+
+            plant.frequency =
+                frequency;
+
+            plant.description =
+                description;
+        }
+
+    } else {
+
+        plants.unshift({
+
+            id:
+                Date.now().toString(),
+
+            name,
+
+            category,
+
+            purchaseDate:
+                purchase,
+
+            frequency,
+
+            description,
+
+            lastWateredDate:
+                todayStr()
+        });
+    }
+
+    saveAndRefresh();
+
+    editingId = null;
+
+    location.hash =
+        "lista-tutte";
+}
+
+function cancelForm() {
+
+    editingId = null;
+
+    location.hash =
+        "home";
+}
+
+// =====================================================
+// AVVIO
+// =====================================================
+
+window.addEventListener(
+    "hashchange",
+    route
+);
+
+window.addEventListener(
+    "load",
+    () => {
+
+        if (
+            purchaseInput &&
+            !purchaseInput.value
+        ) {
+            purchaseInput.value =
+                todayStr();
+        }
+
+        route();
+    }
+);
