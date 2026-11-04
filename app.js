@@ -5,6 +5,13 @@
 let plants = JSON.parse(localStorage.getItem("plants")) || [];
 let editingId = null;
 
+// Compatibilità con vecchi dati
+plants.forEach((plant, index) => {
+    if (!plant.id) {
+        plant.id = "old_" + index + "_" + Date.now();
+    }
+});
+
 // =====================================================
 // ELEMENTI DOM
 // =====================================================
@@ -17,10 +24,8 @@ const plantListEl = document.getElementById("plantList");
 const listTitleEl = document.getElementById("listTitle");
 
 const plantDetailEl = document.getElementById("plantDetail");
-const detailBackEl = document.getElementById("detailBack");
 
 const formTitleEl = document.getElementById("formTitle");
-const formBackEl = document.getElementById("formBack");
 
 const nameInput = document.getElementById("name");
 const categoryInput = document.getElementById("category");
@@ -49,14 +54,7 @@ function getPlant(id) {
     );
 }
 
-function giorni(n) {
-    return n === 1
-        ? "giorno"
-        : "giorni";
-}
-
 function escapeHtml(text) {
-
     return String(text || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -66,12 +64,16 @@ function escapeHtml(text) {
 }
 
 function formatDate(date) {
-
     if (!date) return "-";
 
     const [y, m, d] = date.split("-");
 
     return `${d}/${m}/${y}`;
+}
+
+function saveAndRefresh() {
+    saveStorage();
+    renderDashboard();
 }
 
 // =====================================================
@@ -97,10 +99,7 @@ function getWateringStatus(plant) {
 
     let percent =
         100 -
-        (
-            (diffDays / plant.frequency)
-            * 100
-        );
+        ((diffDays / plant.frequency) * 100);
 
     percent = Math.max(
         0,
@@ -166,23 +165,16 @@ function renderDashboard() {
 
     if (latestTimestamp > 0) {
 
-        const date =
+        lastWateredEl.textContent =
             new Date(
                 latestTimestamp
-            );
-
-        lastWateredEl.textContent =
-            date.toLocaleDateString(
-                "it-IT"
-            );
+            ).toLocaleDateString("it-IT");
 
     } else {
 
-        lastWateredEl.textContent =
-            "-";
+        lastWateredEl.textContent = "-";
     }
 }
-
 // =====================================================
 // NAVIGAZIONE
 // =====================================================
@@ -192,40 +184,59 @@ function showPage(pageId) {
     document
         .querySelectorAll(".page")
         .forEach(page => {
-
-            page.classList.remove(
-                "attiva"
-            );
+            page.classList.remove("attiva");
         });
 
-    const currentPage =
-        document.getElementById(
-            pageId
-        );
+    const page =
+        document.getElementById(pageId);
 
-    if (currentPage) {
+    if (page) {
+        page.classList.add("attiva");
+    }
 
-        currentPage.classList.add(
-            "attiva"
-        );
+    document
+        .querySelectorAll(".bottom-nav a")
+        .forEach(link => {
+            link.classList.remove("active");
+        });
+
+    if (
+        pageId === "page-home"
+    ) {
+        document
+            .querySelector('[data-nav="home"]')
+            ?.classList.add("active");
+    }
+
+    if (
+        pageId === "page-list" ||
+        pageId === "page-detail"
+    ) {
+        document
+            .querySelector('[data-nav="lista"]')
+            ?.classList.add("active");
+    }
+
+    if (
+        pageId === "page-form"
+    ) {
+        document
+            .querySelector('[data-nav="aggiungi"]')
+            ?.classList.add("active");
     }
 }
 
 function route() {
 
-    const hash =
-        location.hash.replace(
-            "#",
-            ""
-        );
-
     renderDashboard();
+
+    const hash =
+        location.hash.replace("#", "");
 
     if (
         !hash ||
         hash === "home"
     ) {
-
         showPage("page-home");
         return;
     }
@@ -233,7 +244,6 @@ function route() {
     if (
         hash === "lista-tutte"
     ) {
-
         renderList("tutte");
         showPage("page-list");
         return;
@@ -242,7 +252,6 @@ function route() {
     if (
         hash === "lista-vaso"
     ) {
-
         renderList("vaso");
         showPage("page-list");
         return;
@@ -251,7 +260,6 @@ function route() {
     if (
         hash === "lista-terreno"
     ) {
-
         renderList("terreno");
         showPage("page-list");
         return;
@@ -260,20 +268,20 @@ function route() {
     if (
         hash === "aggiungi"
     ) {
-
         openForm();
         showPage("page-form");
         return;
     }
 
     if (
-        hash.startsWith(
-            "pianta-"
-        )
+        hash.startsWith("pianta-")
     ) {
 
         const id =
-            hash.substring(7);
+            hash.replace(
+                "pianta-",
+                ""
+            );
 
         renderDetail(id);
         showPage("page-detail");
@@ -281,18 +289,23 @@ function route() {
     }
 
     if (
-        hash.startsWith(
-            "modifica-"
-        )
+        hash.startsWith("modifica-")
     ) {
 
         const id =
-            hash.substring(9);
+            hash.replace(
+                "modifica-",
+                ""
+            );
 
         openForm(id);
         showPage("page-form");
+        return;
     }
+
+    showPage("page-home");
 }
+
 // =====================================================
 // LISTA PIANTE
 // =====================================================
@@ -306,19 +319,22 @@ function renderList(filter) {
     };
 
     listTitleEl.textContent =
-        titoli[filter] || titoli.tutte;
+        titoli[filter] ||
+        titoli.tutte;
 
-    let list = plants;
+    let list = [...plants];
 
     if (filter === "vaso") {
-        list = plants.filter(
-            p => p.category === "Vaso"
+        list = list.filter(
+            p =>
+                p.category === "Vaso"
         );
     }
 
     if (filter === "terreno") {
-        list = plants.filter(
-            p => p.category === "Terreno"
+        list = list.filter(
+            p =>
+                p.category === "Terreno"
         );
     }
 
@@ -338,21 +354,33 @@ function renderList(filter) {
     list.forEach(plant => {
 
         const status =
-            getWateringStatus(plant);
+            getWateringStatus(
+                plant
+            );
+
+        const badge =
+            status.needsWater
+                ? `
+                <span class="badge badge-alert">
+                    ⚠️ Annaffiare
+                </span>
+                `
+                : `
+                <span class="badge badge-ok">
+                    💧 ${status.daysLeft}
+                    ${status.daysLeft === 1 ? "giorno" : "giorni"}
+                </span>
+                `;
 
         const item =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         item.className =
             "plant-item clickable";
 
-        item.onclick = () => {
-            location.hash =
-                "pianta-" + plant.id;
-        };
-
         item.innerHTML = `
-
             <div class="plant-info">
 
                 <div class="plant-header">
@@ -365,6 +393,24 @@ function renderList(filter) {
                         ${plant.category}
                     </span>
 
+                    ${badge}
+
+                </div>
+
+                <div class="plant-meta">
+
+                    <span>
+                        Frequenza:
+                        ogni ${plant.frequency} giorni
+                    </span>
+
+                    <span>
+                        Ultima irrigazione:
+                        ${formatDate(
+                            plant.lastWateredDate
+                        )}
+                    </span>
+
                 </div>
 
                 <div class="watering-progress">
@@ -373,4 +419,23 @@ function renderList(filter) {
                         class="watering-progress-fill"
                         style="
                             width:${status.percent}%;
-                 
+                            background:${status.color};
+                        ">
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        item.onclick = () => {
+            location.hash =
+                "pianta-" +
+                plant.id;
+        };
+
+        plantListEl.appendChild(
+            item
+        );
+    });
+}
