@@ -328,3 +328,111 @@ button.primary:hover {
     margin-bottom: 10px;
     display: block;
 }
+/* =====================================================
+   NAVIGAZIONE A PANNELLI
+   ===================================================== */
+
+.page {
+    display: none;
+}
+
+.page.attiva {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.back {
+    align-self: flex-start;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--primary);
+}
+
+.back:hover {
+    color: var(--primary-hover);
+}
+
+.page-title {
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+
+/* Barra inferiore */
+
+.bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+
+    display: flex;
+    justify-content: space-around;
+
+    padding: 8px 0;
+
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
+}
+
+.bottom-nav a {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 2px;
+
+    text-decoration: none;
+
+    color: var(--text-muted);
+
+    font-size: 1.3rem;
+}
+
+.bottom-nav a span {
+    font-size: 0.75rem;
+}
+
+.bottom-nav a.active {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Scheda dettaglio */
+
+.detail-icon {
+    font-size: 3rem;
+    text-align: center;
+}
+
+.detail-name {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 0.7rem 0;
+
+    border-bottom: 1px solid var(--border);
+}
+
+button.secondary {
+    width: 100%;
+    margin-top: 0.75rem;
+
+    padding: 0.85rem;
+
+    border: none;
+    border-radius: 8px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    cursor: pointer;
+}
